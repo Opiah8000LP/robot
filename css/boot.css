@@ -1,0 +1,41 @@
+/* ==========================================================================
+   boot.css — the loading screen and the "tap to enter" gate.
+   ========================================================================== */
+
+.boot {
+  position: fixed; inset: 0; z-index: 2000; display: grid; place-items: center; padding: 1.5rem;
+  background: var(--bg); perspective: 1200px; overflow: hidden;
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease), visibility 0s linear 0.6s;
+}
+/* a floor grid sliding toward you, so the 3D starts before you've even tapped */
+.boot::before {
+  content: ""; position: absolute; left: -50%; right: -50%; bottom: -5%; height: 65%;
+  background-image: linear-gradient(var(--line-soft) 1px, transparent 1px), linear-gradient(90deg, var(--line-soft) 1px, transparent 1px);
+  background-size: 64px 64px; opacity: 0.45;
+  transform: perspective(600px) rotateX(64deg); transform-origin: 50% 100%;
+  animation: boot-floor 5s linear infinite;
+}
+@keyframes boot-floor { to { background-position: 0 64px; } }
+.boot.is-leaving { opacity: 0; transform: scale(1.18); visibility: hidden; pointer-events: none; }
+
+.boot-card {
+  position: relative; width: min(32rem, 100%); padding: 2rem 2rem 1.5rem;
+  background: var(--card); border: var(--bw) solid var(--line); box-shadow: var(--lift);
+  transform: rotateY(calc(-8deg + var(--mx, 0) * 7deg * var(--tilt))) rotateX(calc(var(--my, 0) * -5deg * var(--tilt)));
+  transition: transform 0.2s var(--ease); animation: boot-in 0.9s var(--ease) both;
+}
+@keyframes boot-in { from { opacity: 0; transform: translateZ(-300px) rotateY(50deg); } }
+.boot-eyebrow { font-family: var(--font-ui); font-weight: 600; margin: 0 0 0.2rem; color: var(--ink-2); }
+.boot-title { font-size: clamp(3rem, 14vw, 5.2rem); letter-spacing: 0.03em; margin: 0 0 1.2rem; }
+
+.boot-bar { position: relative; height: 0.7rem; border: var(--bw) solid var(--line); overflow: hidden; }
+.boot-fill { position: absolute; inset: 0 auto 0 0; width: 0%; background: var(--inv-bg); transition: width 0.25s var(--ease); }
+.boot-status { margin: 0.8rem 0 0; font-family: var(--font-ui); font-weight: 600; min-height: 1.5em; }
+.boot-log { list-style: none; padding: 0.5rem 0.75rem; margin: 0.75rem 0 0; max-height: 8rem; overflow: auto; font-family: var(--font-mono); font-size: 0.8rem; border: var(--bw) dashed var(--line-soft); }
+.boot-log li + li { margin-top: 0.15rem; }
+.boot-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.25rem; }
+.boot-enter { min-width: 11rem; min-height: 3.2rem; font-size: 1.15rem; }
+.boot-enter:not(:disabled) { animation: boot-nudge 2s ease-in-out infinite; }
+@keyframes boot-nudge { 50% { transform: translateY(-3px); } }
+.boot-hint { margin: 0.9rem 0 0; font-size: 0.88rem; color: var(--ink-2); }
+.boot.is-ready { cursor: pointer; }

@@ -1,0 +1,56 @@
+/* ==========================================================================
+   dashboard.css — hero, picture box, this-year, recent.
+   ========================================================================== */
+
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.5rem 2.5rem; align-items: center; padding: 1.4rem 0 1.8rem; margin-bottom: 2rem; border-bottom: var(--bw) solid var(--line); }
+.hero-date { margin: 0 0 0.4rem; font-family: var(--font-ui); font-weight: 600; color: var(--ink-2); }
+.hero-welcome { font-size: clamp(1.8rem, 3.6vw, 2.9rem); line-height: 1.12; max-width: 24ch; margin-bottom: 0.7rem; }
+.hero-id { margin: 0 0 1.1rem; font-family: var(--font-ui); font-size: 1.1rem; }
+.hero-search { position: relative; max-width: 30rem; margin-bottom: 0.9rem; }
+.hero-search input { min-height: 3rem; font-family: var(--font-ui); font-weight: 600; font-size: 1.05rem; padding-left: 1rem; }
+.hero-pic { display: grid; justify-items: center; gap: 0.9rem; padding: 0.6rem 1.2rem 0.4rem; }
+.picbox { --px: 0; --py: 0; position: relative; width: 11rem; aspect-ratio: 1; cursor: pointer; rotate: -4deg;
+  transform: perspective(700px) rotateY(calc(var(--px) * 22deg * var(--tilt))) rotateX(calc(var(--py) * -22deg * var(--tilt))); transition: transform 0.2s var(--ease); }
+.picbox-face, .picbox-back { position: absolute; inset: 0; border: var(--bw) solid var(--line); background: var(--card); }
+.picbox-face { padding: 0.45rem; display: grid; box-shadow: var(--lift); }
+.picbox-back { transform: translate(0.7rem, 0.6rem) rotate(3deg); background: var(--card-2); }
+.picbox-back--2 { transform: translate(1.4rem, 1.2rem) rotate(7deg); background: var(--bg); }
+.picbox-img { width: 100%; height: 100%; object-fit: cover; }
+.picbox-miss { display: grid; place-content: center; gap: 0.3rem; text-align: center; border: 1px dashed var(--line-soft); padding: 0.4rem; font-family: var(--font-ui); font-weight: 600; overflow-wrap: anywhere; }
+.picbox-miss code { font-size: 0.75rem; }
+.picbox:hover { rotate: 2deg; }
+.picbox.is-boing { animation: boing 0.7s var(--ease); }
+@keyframes boing { 0% { scale: 1; } 25% { scale: 1.12 0.86; rotate: -9deg; } 55% { scale: 0.92 1.1; rotate: 6deg; } 80% { scale: 1.03; rotate: -2deg; } 100% { scale: 1; } }
+.picbox-cap { margin: 0; font-size: 0.9rem; font-family: var(--font-ui); max-width: 14rem; text-align: center; }
+
+/* widgets */
+.dash-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr)); gap: 2rem; align-items: start; }
+.dash-row > .block { margin-bottom: 2.4rem; }
+
+/* tabs */
+.tabs { display: flex; flex-wrap: wrap; gap: 0; margin-bottom: 1rem; border: var(--bw) solid var(--line); width: fit-content; max-width: 100%; }
+.tab { padding: 0.4rem 1rem; background: var(--card); border: 0; border-right: var(--bw) solid var(--line); font-family: var(--font-ui); font-weight: 600; font-size: 1rem; cursor: pointer; }
+.tab:last-child { border-right: 0; }
+.tab:hover { background: var(--card-2); }
+.tab[aria-selected="true"] { background: var(--inv-bg); color: var(--inv-ink); }
+.tabpanel { outline-offset: 6px; }
+
+/* this year */
+.thisyear { display: grid; gap: 1rem; }
+.ty-top { display: flex; align-items: center; gap: 0.9rem; }
+.ty-year { font-family: var(--font-ui); font-weight: 700; font-size: 2.6rem; line-height: 1; }
+.ty-headline { font-family: var(--font-ui); font-size: 1.35rem; font-weight: 600; margin: 0; }
+.ty-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+/* recent */
+.recent-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+.recent-item { padding: 0.6rem 0.9rem; border: var(--bw) solid var(--line); background: var(--card); }
+.recent-top { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 0.8rem; }
+.recent-top .muted { margin-left: auto; font-size: 0.85rem; }
+.recent-item p { margin: 0.25rem 0 0; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-pic { order: -1; justify-self: start; padding: 0.5rem 0 0.8rem; }
+  .picbox { width: 8.5rem; }
+}

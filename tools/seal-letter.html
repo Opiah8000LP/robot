@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Seal a letter</title>
+  <link rel="stylesheet" href="../css/tokens.css">
+  <link rel="stylesheet" href="../css/base.css">
+  <style>
+    body { overflow: auto; padding: 1.5rem; }
+    main { max-width: 40rem; margin: 0 auto; background: var(--card); border: var(--bw) solid var(--line); padding: 1.5rem 1.75rem 2rem; }
+    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+    textarea { min-height: 14rem; }
+    #out { margin-top: 1.25rem; display: none; }
+    code { background: var(--card-2); padding: 0 0.3em; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Seal a letter</h1>
+    <p>Write to your future self, pick a date, and seal it. Once sealed, <strong>nobody can read it until that moment</strong>, not even you. This page is not linked from the site; it only runs on your own computer.</p>
+
+    <div class="field"><label for="letter">Letter</label><textarea id="letter" placeholder="Dear future me…"></textarea>
+      <p class="help">A blank line starts a new paragraph.</p></div>
+    <div class="field"><label for="when">Unlocks on</label><input type="datetime-local" id="when">
+      <p class="help">Uses this device's time zone. You need to be online to seal it, and again to open it.</p></div>
+    <p><button class="btn btn--primary" id="seal" type="button">Seal it</button></p>
+    <p id="msg" role="status"></p>
+
+    <div id="out">
+      <p>Done. The file below is scrambled; the letter is nowhere in it. <strong>Download it and replace <code>data/letter.sealed.js</code></strong>, then commit as usual.</p>
+      <p><button class="btn" id="dl" type="button">Download letter.sealed.js</button></p>
+      <p class="muted">Before you close this tab: keep your own copy of the letter if you want one. After sealing it can't be read until the date.</p>
+    </div>
+  </main>
+
+  <script src="../vendor/tlock.bundle.js"></script>
+  <script>
+    (function () {
+      var $ = function (id) { return document.getElementById(id); };
+      var when = $('when'), msg = $('msg'), fileText = '';
+      var d = new Date(Date.now() + 365 * 86400000); d.setMinutes(0, 0, 0);
+      var pad = function (n) { return String(n).padStart(2, '0'); };
+      when.value = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+
+      $('seal').addEventListener('click', function () {
+        var text = $('letter').value, ms = new Date(when.value).getTime();
+        if (!text.trim()) { msg.textContent = 'The letter is empty.'; return; }
+        if (!isFinite(ms) || ms < Date.now() + 60000) { msg.textContent = 'Pick a date at least a minute from now.'; return; }
+        if (!window.RDTimeLock) { msg.textContent = 'The time-lock library did not load. Is vendor/tlock.bundle.js there?'; return; }
+        var btn = $('seal'); btn.disabled = true; msg.textContent = 'Sealing…';
+        RDTimeLock.seal(text, ms).then(function (r) {
+          $('letter').value = '';
+          var data = { title: '', unlockMs: r.unlockMs, round: r.round, cipher: r.cipher, sealedAt: Date.now() };
+          fileText = '// RDWEEB data file: data/letter.sealed.js\n// Scrambled on purpose. The letter itself is not in here.\nRDW.defineLetter(' + JSON.stringify(data, null, 2) + ');\n';
+          msg.textContent = 'Sealed until ' + new Date(r.unlockMs).toLocaleString() + '.';
+          $('out').style.display = 'block'; btn.disabled = false;
+        }).catch(function (e) { btn.disabled = false; msg.textContent = 'Could not seal it: ' + (e && e.message ? e.message : e) + '. Are you online?'; });
+      });
+
+      $('dl').addEventListener('click', function () {
+        var url = URL.createObjectURL(new Blob([fileText], { type: 'text/javascript' }));
+        var a = document.createElement('a'); a.href = url; a.download = 'letter.sealed.js'; document.body.appendChild(a); a.click();
+        setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 500);
+      });
+    })();
+  </script>
+</body>
+</html>
